@@ -47,6 +47,21 @@ app.get("/usuarios", (req, res) => {
   }
 });
 
+
+app.get("/equipes", (req, res) => {
+  try {
+    client.query("SELECT * FROM Equipes", function (err, result) {
+      if (err) {
+        return console.error("Erro ao executar a qry de SELECT", err);
+      }
+      res.send(result.rows);
+      console.log("Chamou get equipes");
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 app.get("/usuarios/:id", (req, res) => {
   try {
     console.log("Chamou /:id " + req.params.id);
