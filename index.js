@@ -81,6 +81,25 @@ app.get("/usuarios/:id", (req, res) => {
   }
 });
 
+app.get("/equipes/:id", (req, res) => {
+  try {
+    console.log("Chamou /:id " + req.params.id);
+    client.query(
+      "SELECT * FROM Equipes WHERE id = $1",
+      [req.params.id],
+      function (err, result) {
+        if (err) {
+          return console.error("Erro ao executar a qry do SELECT", err);
+        }
+        res.send(result.rows);
+        console.log(result);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 app.delete("/usuarios/:id", (req, res) => {
   try {
     console.log("Chamou delete /:id " + req.params.id);
