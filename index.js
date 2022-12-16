@@ -182,10 +182,10 @@ app.post("/usuarios", (req, res) => {
 app.post("/equipes", (req, res) => {
   try {
     console.log("Chamou post", req.body);
-    const { nome, email } = req.body;
+    const { nome, escudo } = req.body;
     client.query(
       "INSERT INTO Equipes (nome, escudo) VALUES ($1, $2) RETURNING * ",
-      [nome, email],
+      [nome, escudo],
       function (err, result) {
         if (err) {
           return console.error("Erro ao executar a qry de INSERT", err);
@@ -230,10 +230,10 @@ app.put("/equipes/:id", (req, res) => {
   try {
     console.log("Chamou update", req.body);
     const id = req.params.id;
-    const { nome, email } = req.body;
+    const { nome, escudo } = req.body;
     client.query(
       "UPDATE Equipes SET nome=$1, escudo=$2 WHERE id =$3 ",
-      [nome, email, id],
+      [nome, escudo, id],
       function (err, result) {
         if (err) {
           return console.error("Erro ao executar a qry de UPDATE", err);
