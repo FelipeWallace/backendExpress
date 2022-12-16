@@ -33,6 +33,7 @@ app.get("/", (req, res) => {
   res.send("Ok - Servidor disponível");
 });
 
+//GET USERS
 app.get("/usuarios", (req, res) => {
   try {
     client.query("SELECT * FROM Usuarios", function (err, result) {
@@ -47,7 +48,7 @@ app.get("/usuarios", (req, res) => {
   }
 });
 
-
+//GET EQUIPES
 app.get("/equipes", (req, res) => {
   try {
     client.query("SELECT * FROM Equipes", function (err, result) {
@@ -62,6 +63,7 @@ app.get("/equipes", (req, res) => {
   }
 });
 
+//GET USERS BY ID
 app.get("/usuarios/:id", (req, res) => {
   try {
     console.log("Chamou /:id " + req.params.id);
@@ -81,6 +83,7 @@ app.get("/usuarios/:id", (req, res) => {
   }
 });
 
+//GET EQUIPES BY ID
 app.get("/equipes/:id", (req, res) => {
   try {
     console.log("Chamou /:id " + req.params.id);
@@ -100,6 +103,7 @@ app.get("/equipes/:id", (req, res) => {
   }
 });
 
+//DELETE USERS BY ID
 app.delete("/usuarios/:id", (req, res) => {
   try {
     console.log("Chamou delete /:id " + req.params.id);
@@ -125,6 +129,33 @@ app.delete("/usuarios/:id", (req, res) => {
   }
 });
 
+//DELETE EQUIPES BY ID
+app.delete("/equipes/:id", (req, res) => {
+  try {
+    console.log("Chamou delete /:id " + req.params.id);
+    const id = req.params.id;
+    client.query(
+      "DELETE FROM Equipes WHERE id = $1",
+      [id],
+      function (err, result) {
+        if (err) {
+          return console.error("Erro ao executar a qry de DELETE", err);
+        } else {
+          if (result.rowCount == 0) {
+            res.status(400).json({ info: "Registro não encontrado." });
+          } else {
+            res.status(200).json({ info: `Registro excluído. Código: ${id}` });
+          }
+        }
+        console.log(result);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//POST USERS
 app.post("/usuarios", (req, res) => {
   try {
     console.log("Chamou post", req.body);
@@ -147,6 +178,30 @@ app.post("/usuarios", (req, res) => {
   }
 });
 
+//POST EQUIPES
+app.post("/equipes", (req, res) => {
+  try {
+    console.log("Chamou post", req.body);
+    const { nome, email } = req.body;
+    client.query(
+      "INSERT INTO Equipes (nome, escudo) VALUES ($1, $2) RETURNING * ",
+      [nome, email],
+      function (err, result) {
+        if (err) {
+          return console.error("Erro ao executar a qry de INSERT", err);
+        }
+        const { id } = result.rows[0];
+        res.setHeader("id", `${id}`);
+        res.status(201).json(result.rows[0]);
+        console.log(result);
+      }
+    );
+  } catch (erro) {
+    console.error(erro);
+  }
+});
+
+//UPDATE USERS
 app.put("/usuarios/:id", (req, res) => {
   try {
     console.log("Chamou update", req.body);
@@ -154,6 +209,30 @@ app.put("/usuarios/:id", (req, res) => {
     const { nome, email } = req.body;
     client.query(
       "UPDATE Usuarios SET nome=$1, email=$2 WHERE id =$3 ",
+      [nome, email, id],
+      function (err, result) {
+        if (err) {
+          return console.error("Erro ao executar a qry de UPDATE", err);
+        } else {
+          res.setHeader("id", id);
+          res.status(202).json({ id: id });
+          console.log(result);
+        }
+      }
+    );
+  } catch (erro) {
+    console.error(erro);
+  }
+});
+
+//UPDATE EQUIPES
+app.put("/equipes/:id", (req, res) => {
+  try {
+    console.log("Chamou update", req.body);
+    const id = req.params.id;
+    const { nome, email } = req.body;
+    client.query(
+      "UPDATE Equipes SET nome=$1, escudo=$2 WHERE id =$3 ",
       [nome, email, id],
       function (err, result) {
         if (err) {
